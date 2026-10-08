@@ -39,13 +39,30 @@ cine-terror/
 │   ├── elicitacao.md
 │   └── user-stories/
 │       └── RF06-avaliacao-filmes.md
-├── src/                  # Código-fonte (a definir)
+├── index.html            # Página do app
+├── src/
+│   ├── app.js            # Telas, regras (90%, média, créditos)
+│   ├── data.js           # Catálogo inicial de filmes
+│   └── styles.css        # Visual mobile-first
 └── README.md
 ```
 
 ## 🚧 Status
 
-Projeto em fase de **levantamento e especificação de requisitos**. A stack de desenvolvimento ainda será definida.
+**v0.1 — protótipo no ar (Vercel).** Site estático em HTML, CSS e JavaScript puro, sem etapa de build.
+
+Já funciona:
+- Cadastro e login (senha guardada com sal + SHA-256) — RF01, RF02
+- Catálogo com 6 clássicos do terror em domínio público (Internet Archive) e cadastro de novos filmes — RF03
+- Pesquisa por título — RF04
+- Player que mede só o que foi **realmente assistido** (pular trechos não conta) — RF05
+- Avaliação 1–5 ★ e comentários liberados apenas a partir de 90% — RF06, RF07
+- Média automática das notas — RF08
+- +10 créditos na primeira avaliação de cada filme — RF09
+
+> ⚠️ Nesta versão os dados ficam salvos **no navegador** de cada pessoa (localStorage). O próximo passo é ligar um back-end (ex.: Supabase) para que contas, notas e comentários sejam compartilhados entre todos.
+
+**Dica para apresentação:** o player tem velocidade de até 16x, para mostrar a liberação dos 90% sem esperar o filme inteiro.
 
 ## 👩‍💻 Autoria
 
