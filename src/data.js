@@ -1,3 +1,23 @@
+// Contas pré-criadas. A senha não fica no código: só o hash (SHA-256 com sal).
+// papel "adm" = administradora/dev (cadastra filmes, acessa o painel)
+// papel "usuario" = usuário comum
+window.CONTAS_PADRAO = [
+  {
+    nome: "ADM",
+    email: "adm@cineterror.dev",
+    papel: "adm",
+    sal: "c28b9723aff8ae0f95b661effbee8fc2",
+    hash: "bd130c9467263b2c8646b6e9b87fb4bd3cf63e87a345d0a9f0b4536c8da36e84",
+  },
+  {
+    nome: "Jéssika Rodrigues",
+    email: "jessika@cineterror.dev",
+    papel: "usuario",
+    sal: "b2e8045bc2ec1f55d089969d0095f466",
+    hash: "27c61eeef939745c40d82604ee924da9aa198152f81078cf40cb7cbfb4ef5585",
+  },
+];
+
 // Catálogo inicial: clássicos do terror em domínio público, hospedados no Internet Archive.
 const IA = (id, file) => `https://archive.org/download/${id}/${encodeURIComponent(file)}`;
 const IA_IMG = (id) => `https://archive.org/services/img/${id}`;

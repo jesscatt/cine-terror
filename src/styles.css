@@ -53,7 +53,7 @@ button, input, textarea, select { font: inherit; color: inherit; }
 
 .tabbar {
   position: fixed; inset: auto 0 0 0; z-index: 10;
-  display: grid; grid-template-columns: repeat(3, 1fr);
+  display: grid; grid-auto-flow: column; grid-auto-columns: 1fr;
   height: calc(var(--tabbar) + env(safe-area-inset-bottom)); padding-bottom: env(safe-area-inset-bottom);
   background: rgba(15, 10, 11, .95); backdrop-filter: blur(10px); border-top: 1px solid var(--borda);
 }
@@ -176,3 +176,20 @@ button, input, textarea, select { font: inherit; color: inherit; }
 .linha-filme { display: grid; grid-template-columns: 1fr 70px auto; align-items: center; gap: 12px; text-decoration: none; color: var(--texto); }
 .linha-filme b { font-size: .9rem; }
 #sair { margin-top: 12px; }
+
+/* ---------- Papéis e painel ---------- */
+.topo-dir { display: flex; align-items: center; gap: 8px; }
+.papel {
+  display: inline-block; margin-top: 4px; font-size: .7rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+  padding: 2px 8px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--borda); color: var(--suave);
+}
+.papel.adm { background: rgba(242, 179, 61, .12); border-color: rgba(242, 179, 61, .5); color: var(--ouro); }
+.topo-dir .papel { margin-top: 0; }
+.lista { padding: 4px 16px; }
+.lista .item { display: flex; align-items: center; gap: 10px; padding: 12px 0; border-top: 1px solid var(--borda); }
+.lista .item:first-child { border-top: 0; }
+.lista .item > div { flex: 1; min-width: 0; display: grid; }
+.lista .item small { color: var(--suave); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lista .item .papel { margin-top: 0; }
+.btn.mini { width: auto; padding: 6px 12px; font-size: .8rem; }
+section > h2 { margin-top: 18px; }

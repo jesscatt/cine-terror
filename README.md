@@ -60,6 +60,15 @@ Já funciona:
 - Média automática das notas — RF08
 - +10 créditos na primeira avaliação de cada filme — RF09
 
+### Perfis de acesso
+
+| Perfil | Pode |
+|---|---|
+| **ADM / Dev** | Tudo do usuário + cadastrar filmes, abrir o Painel (lista de usuários, remover filmes, zerar dados de teste) |
+| **Usuário** | Assistir, pesquisar, avaliar, comentar e acumular créditos |
+
+Duas contas já vêm prontas: **ADM** (`adm@cineterror.dev`) e **Jéssika Rodrigues** (`jessika@cineterror.dev`, usuário). Quem se cadastra pelo site entra como usuário. As senhas não ficam no código, só o hash.
+
 > ⚠️ Nesta versão os dados ficam salvos **no navegador** de cada pessoa (localStorage). O próximo passo é ligar um back-end (ex.: Supabase) para que contas, notas e comentários sejam compartilhados entre todos.
 
 **Dica para apresentação:** o player tem velocidade de até 16x, para mostrar a liberação dos 90% sem esperar o filme inteiro.

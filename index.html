@@ -15,14 +15,18 @@
 <body>
   <header class="topbar" id="topbar" hidden>
     <a href="#/" class="logo">Cine Terror</a>
-    <a href="#/perfil" class="credits" id="credits" title="Seus créditos">🩸 <span>0</span></a>
+    <div class="topo-dir">
+      <span class="papel adm" id="selo" hidden>ADM</span>
+      <a href="#/perfil" class="credits" id="credits" title="Seus créditos">🩸 <span>0</span></a>
+    </div>
   </header>
 
   <main id="app" aria-live="polite"></main>
 
   <nav class="tabbar" id="tabbar" hidden>
     <a href="#/" data-tab="home"><span>🎬</span>Filmes</a>
-    <a href="#/novo" data-tab="novo"><span>＋</span>Cadastrar</a>
+    <a href="#/novo" data-tab="novo" data-adm hidden><span>＋</span>Cadastrar</a>
+    <a href="#/painel" data-tab="painel" data-adm hidden><span>🛠️</span>Painel</a>
     <a href="#/perfil" data-tab="perfil"><span>👤</span>Perfil</a>
   </nav>
 

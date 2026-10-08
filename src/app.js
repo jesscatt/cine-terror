@@ -62,6 +62,25 @@
     todos[u.email] = u;
     db.set("usuarios", todos);
   }
+  const ehAdm = (u) => !!u && u.papel === "adm";
+
+  // Garante que as contas pré-criadas (ADM e Jéssika) existam neste navegador.
+  (function criaContasPadrao() {
+    const todos = usuarios();
+    let mudou = false;
+    for (const c of window.CONTAS_PADRAO || []) {
+      const atual = todos[c.email];
+      if (!atual) {
+        todos[c.email] = { ...c, creditos: 0, criadoEm: Date.now() };
+        mudou = true;
+      } else if (atual.papel !== c.papel || atual.hash !== c.hash) {
+        todos[c.email] = { ...atual, papel: c.papel, sal: c.sal, hash: c.hash, nome: c.nome };
+        mudou = true;
+      }
+    }
+    for (const u of Object.values(todos)) if (!u.papel) { u.papel = "usuario"; mudou = true; }
+    if (mudou) db.set("usuarios", todos);
+  })();
 
   // ---------- Filmes (RF03) ----------
   const filmes = () => [...window.FILMES_INICIAIS, ...db.get("filmes_extra", [])];
@@ -112,6 +131,9 @@
     $("#topbar").hidden = !logado;
     $("#tabbar").hidden = !logado;
     if (u) $("#credits span").textContent = u.creditos || 0;
+    const adm = ehAdm(u);
+    $("#selo").hidden = !adm;
+    document.querySelectorAll("[data-adm]").forEach((el) => (el.hidden = !adm));
     document.querySelectorAll(".tabbar a").forEach((a) => a.classList.toggle("ativo", a.dataset.tab === rota));
   }
 
@@ -148,7 +170,7 @@
         if (nome.length < 2) return (erro.textContent = "Informe seu nome.");
         if (usuarios()[email]) return (erro.textContent = "Já existe uma conta com esse e-mail.");
         const sal = novoSal();
-        salvaUsuario({ nome, email, sal, hash: await hashSenha(senha, sal), creditos: 0, criadoEm: Date.now() });
+        salvaUsuario({ nome, email, papel: "usuario", sal, hash: await hashSenha(senha, sal), creditos: 0, criadoEm: Date.now() });
         db.set("sessao", email);
         toast(`Bem-vindo(a), ${nome}!`);
       } else {
@@ -445,7 +467,8 @@
       <section>
         <div class="card perfil">
           <div class="avatar">${esc(u.nome.charAt(0).toUpperCase())}</div>
-          <div><h1>${esc(u.nome)}</h1><p class="pequena">${esc(u.email)}</p></div>
+          <div><h1>${esc(u.nome)}</h1><p class="pequena">${esc(u.email)}</p>
+          <span class="papel ${ehAdm(u) ? "adm" : ""}">${ehAdm(u) ? "Administradora · Dev" : "Usuário"}</span></div>
         </div>
         <div class="stats">
           <div class="card"><b>${u.creditos || 0}</b><span>créditos 🩸</span></div>
@@ -473,6 +496,70 @@
     });
   }
 
+  function telaPainel() {
+    atualizaChrome("painel");
+    const todos = Object.values(usuarios()).sort((a, b) => (a.papel === b.papel ? a.nome.localeCompare(b.nome) : a.papel === "adm" ? -1 : 1));
+    const totalNotas = Object.values(avaliacoes()).reduce((s, n) => s + Object.keys(n).length, 0);
+    const totalComent = Object.values(comentarios()).reduce((s, l) => s + l.length, 0);
+    const extras = db.get("filmes_extra", []);
+
+    app.innerHTML = `
+      <section>
+        <h1>Painel ADM / Dev</h1>
+        <div class="stats">
+          <div class="card"><b>${filmes().length}</b><span>filmes</span></div>
+          <div class="card"><b>${totalNotas}</b><span>avaliações</span></div>
+          <div class="card"><b>${totalComent}</b><span>comentários</span></div>
+        </div>
+
+        <h2>Usuários (${todos.length})</h2>
+        <div class="card lista">
+          ${todos.map((x) => `
+            <div class="item">
+              <div><b>${esc(x.nome)}</b><small>${esc(x.email)}</small></div>
+              <span class="papel ${x.papel === "adm" ? "adm" : ""}">${x.papel === "adm" ? "ADM" : "Usuário"}</span>
+              <span class="pequena">🩸 ${x.creditos || 0}</span>
+            </div>`).join("")}
+        </div>
+
+        <h2>Filmes cadastrados por você (${extras.length})</h2>
+        <div class="card lista">
+          ${extras.length
+            ? extras.map((f) => `
+              <div class="item">
+                <div><b>${esc(f.titulo)}</b><small>${esc(f.ano)} · ${esc(f.diretor)}</small></div>
+                <button class="btn mini" data-remover="${esc(f.id)}">Remover</button>
+              </div>`).join("")
+            : `<p class="vazio">Nenhum filme extra. Use a aba Cadastrar.</p>`}
+        </div>
+
+        <h2>Ferramentas de teste</h2>
+        <div class="card form">
+          <p class="pequena">Apaga progresso, avaliações, comentários e créditos <b>deste navegador</b>. As contas e os filmes continuam.</p>
+          <button class="btn" id="resetar">Zerar dados de teste</button>
+        </div>
+      </section>`;
+
+    app.querySelectorAll("[data-remover]").forEach((b) =>
+      b.addEventListener("click", () => {
+        db.set("filmes_extra", db.get("filmes_extra", []).filter((f) => f.id !== b.dataset.remover));
+        toast("Filme removido.");
+        telaPainel();
+      })
+    );
+    $("#resetar").addEventListener("click", () => {
+      if (!confirm("Zerar progresso, avaliações, comentários e créditos deste navegador?")) return;
+      db.set("progresso", {});
+      db.set("avaliacoes", {});
+      db.set("comentarios", {});
+      const us = usuarios();
+      Object.values(us).forEach((x) => (x.creditos = 0));
+      db.set("usuarios", us);
+      toast("Dados de teste zerados.");
+      telaPainel();
+    });
+  }
+
   // ---------- Rotas ----------
   function rotear() {
     if (limpaPlayer) { limpaPlayer(); limpaPlayer = null; }
@@ -486,7 +573,10 @@
       case "cadastro": return logado ? (location.hash = "#/") : telaLogin("cadastro");
       case "login": return (location.hash = "#/");
       case "filme": return telaFilme(decodeURIComponent(param || ""));
-      case "novo": return telaNovoFilme();
+      case "novo":
+      case "painel":
+        if (!ehAdm(usuarioAtual())) { toast("Área restrita à administração."); return (location.hash = "#/"); }
+        return rota === "novo" ? telaNovoFilme() : telaPainel();
       case "perfil": return telaPerfil();
       default: return telaCatalogo();
     }
